@@ -7,6 +7,7 @@
 1. 直接推薦關聯度最高的商品
 2. 考慮每一個人的過去購買紀錄，推薦偏好分數最高的產品
 
-## shiny 的模擬畫面
+## 模擬推薦
+利用shiny，做出一個簡易的Demo
 
 ![shiny](https://imgur.com/nHj6QCG.jpg)
