@@ -10,4 +10,4 @@
 ## 模擬推薦
 利用shiny，做出一個簡易的Demo
 
-
+![shiny](https://imgur.com/nHj6QCG.jpg)
