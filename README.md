@@ -8,6 +8,7 @@
 2. 考慮每一個人的過去購買紀錄，推薦偏好分數最高的產品
 
 ## 模擬推薦
-利用shiny，做出一個簡易的Demo
-除了Item-based的推薦和 Fp-rule，也加入免運加購價推薦邏輯
+> 利用shiny，做出一個簡易的Demo
+> 除了Item-based的推薦和 Fp-rule，也加入免運加購價推薦邏輯
+
 ![shiny](https://imgur.com/emU8Up6.jpg)
