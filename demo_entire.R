@@ -22,26 +22,6 @@ price_df <- read.table(price_file_in,encoding = "UTF-8", header = TRUE, sep = ",
 #price_df[price_df$SalePageId == 1 , 2]
 
 # id #### 
-#shopid = "13573"
-
-
-# get.sample <- function(){
-#   s <- sample(colnames(js_item_sim), 1)
-#   #s <- 2866643
-#   #print(check(s))
-#   while(check(s) == "error"){
-#     print(s)
-#     s <- sample(colnames(js_item_sim), 1)
-#   }
-#   s %<>% as.character()
-#   s
-#   
-# }
-
-# shop_name <- function(s,x){
-#   shopid <<- x
-#   shop_df[shop_df$shopid == x,2]
-# }
 shop_web <- function(x){
   shop_df[shop_df$shopid == x,3]
 }
@@ -68,16 +48,13 @@ check <- function(shopid,x){
 #     fromJSON(.) %>% "[["("ImageList") %>% unlist(.) %>% "[["("PicUrl")}
 
 get.prod.img.s <- function (shopid,input.prod.id) {
-  #input.prod.id <- '3079099,3016412'
   paste(shop_web(shopid),"/webapi/salepage/GetSalepageDataByIds?ids=",input.prod.id,sep="",collapse = "") %>% read_html() %>%
      xml_text() %>% fromJSON() %>% "[["(1) %>% lapply(function(x){ x %>%  "[["("PicUrl")})}
 
 get.prod.price <- function (shopid,input.prod.id) {
-  # input.prod.id <- '3079099,3016412'
   paste(shop_web(shopid),"/webapi/salepage/GetSalepageDataByIds?ids=",input.prod.id,sep="",collapse = "") %>% read_html() %>%
     xml_text() %>% fromJSON() %>% "[["(1) %>% lapply(function(x){ x %>%  "[["("Price")})}
 get.prod.title <- function (shopid,input.prod.id) {
-  # input.prod.id <- '3079099,3016412'
   paste(shop_web(shopid),"/webapi/salepage/GetSalepageDataByIds?ids=",input.prod.id,sep="",collapse = "") %>% read_html() %>%
     xml_text() %>% fromJSON() %>% "[["(1) %>% lapply(function(x){ x %>%  "[["("Title")})}
 
@@ -85,14 +62,11 @@ get.prod.title <- function (shopid,input.prod.id) {
 
 
 pref <- function(shopid,x){
-  #shopid = "13573"
-  #shopid %<>% as.character()
+
   filename <- paste(shopid,'_201709','itemmatrix.Rdata',sep="",collapse = "")
   load(filename)
-  #x <- '2801622'
   
   x <- strsplit(x,',')[[1]] %>% as.list()
-  #x %<>% as.list()
   Past <- lapply(1:length(x),function(i){ if (x[i] %in% colnames(js_item_sim)) x[i]})
   if(is.null(Past) ){print("Wrong!")}
   # 計算排行 ####
@@ -109,8 +83,7 @@ pref <- function(shopid,x){
       
       cols <- which(!colnames(Pref_table) %in% "SalePage")
       Pref_table[, sum:= rowSums(.SD), .SDcol=cols]
-      #Pref_table %<>% as.data.frame()
-      #rownames(Pref_table) <- Pref_table$SalePage
+
       
     } else{
       Pref_table <- js_item_sim[,Past] %>% as.matrix %>% data.table
@@ -131,10 +104,7 @@ pref <- function(shopid,x){
 }
 
 all_pref <- function(shopid,x){
-  #x <- '2870457'
-  #shopid <- "1993" 
-  #x <- "2350073,2782640,3020350"
-  #x <- "2099867"
+
   item_df <- pref(shopid,x)
   item_df$situation <- lapply(rownames(item_df),function(x){check(shopid, x)})
   item_df$price <- lapply(rownames(item_df),function(x){price_df[price_df$SalePageId == x , 2]}) # 這邊好像要改成join比較好
@@ -182,9 +152,6 @@ server <- function(input, output, session) {
   #input$shop.id
   
   rec_product <- reactive({paste(unlist(all_pref(input$shop.id,input$prod.id)$situation[1:12]), collapse=',')})
-  #urls <- reactive({sapply(all_pref(input$shop.id,input$prod.id)$situation[1:15], get.prod.img)})
-  #urls <- reactive({get.prod.img.s(input$shop.id,paste(unlist(all_pref(input$shop.id,input$prod.id)$situation[1:5]), collapse=','))})
-  #titles <- reactive({get.prod.title(input$shop.id,paste(unlist(all_pref(input$shop.id,input$prod.id)$situation[1:5]), collapse=','))})
   urls <- reactive({get.prod.img.s(input$shop.id,rec_product())})
   titles <- reactive({get.prod.title(input$shop.id,rec_product())})
   price <- reactive({get.prod.price(input$shop.id,rec_product())})
@@ -202,4 +169,3 @@ server <- function(input, output, session) {
 }
 
 shinyApp(ui, server)
-#rm(list=ls())
